@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace KSPF.Parts.PartModules
 {
     /// <summary>
     /// Allows persisting of part-level properties per instance of part that are usually only at the AvailablePart definition level
     /// </summary>
-    public class ModulePartVariantsEx : PartModule
+    public class ModulePartData : PartModule
     {
         [KSPField(isPersistant = true)]
-        public string internalModel = null;
+        public string InternalModel = null;
 
         [KSPField(isPersistant = true)]
-        public float rescaleFactor = 0.0f;
+        public float RescaleFactor = 0.0f;
 
         [KSPField(isPersistant = true)]
-        public float scale = 0.0f;
+        public float Scale = 0.0f;
 
         public override void OnAwake()
         {
@@ -33,29 +31,29 @@ namespace KSPF.Parts.PartModules
 
         private void SetInternalModel()
         {
-            if (string.IsNullOrEmpty(this.internalModel))
+            if (string.IsNullOrEmpty(this.InternalModel))
             { return; }
 
             ConfigNode oConfig = new ConfigNode("INTERNAL");
-            oConfig.AddValue("name", this.internalModel);
+            oConfig.AddValue("name", this.InternalModel);
 
             this.part.partInfo.internalConfig = oConfig;
         }
 
         private void SetRescaleFactor()
         {
-            if (this.rescaleFactor == 0.0f)
+            if (this.RescaleFactor == 0.0f)
             { return; }
 
-            this.part.rescaleFactor = this.rescaleFactor;
+            this.part.rescaleFactor = this.RescaleFactor;
         }
 
         private void SetScale()
         {
-            if (this.scale == 0.0f)
+            if (this.Scale == 0.0f)
             { return; }
 
-            this.part.scaleFactor = this.scale;
+            this.part.scaleFactor = this.Scale;
         }
     }
 }

@@ -42,8 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
-    <Compile Include="Parts\Addons\PartVariantsEx.cs" />
-    <Compile Include="Parts\PartModules\ModulePartVariantsEx.cs" />
+    <Compile Include="Parts\Addons\ModulePartVariantsEx.cs" />
+    <Compile Include="Parts\PartModules\ModulePartData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

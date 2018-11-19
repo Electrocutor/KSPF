@@ -8,7 +8,7 @@ namespace KSPF.Parts.Addons
     /// Addon used to hook the existing ModulePartVariants and extend it
     /// </summary>
     [KSPAddon(KSPAddon.Startup.Instantly, true)]
-    public class PartVariantsEx : MonoBehaviour
+    public class ModulePartVariantsEx : MonoBehaviour
     {
         private bool _Debug = false;
         private EventData<Part, PartVariant>.OnEvent VariantAppliedEvent;
@@ -37,7 +37,7 @@ namespace KSPF.Parts.Addons
 
             foreach (PartResourceDefinition oResourceDef in PartResourceLibrary.Instance.resourceDefinitions)
             {
-                sValue = oVariant.GetExtraInfoValue("resource/" + oResourceDef.name);
+                sValue = oVariant.GetExtraInfoValue("Resource/" + oResourceDef.name);
 
                 if (!string.IsNullOrEmpty(sValue))
                 {
