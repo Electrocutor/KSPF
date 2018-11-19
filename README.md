@@ -2,4 +2,4 @@
 A comprehensive, organized, and efficient API to KSP
 
 ## Part Modules
-* ModulePartVariantsEx
+* ModulePartData

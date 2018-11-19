@@ -10,28 +10,31 @@ namespace KSPF.Parts.Addons
     [KSPAddon(KSPAddon.Startup.Instantly, true)]
     public class ModulePartVariantsEx : MonoBehaviour
     {
-        private bool _Debug = false;
         private EventData<Part, PartVariant>.OnEvent VariantAppliedEvent;
 
         public void Start()
         {
+            DontDestroyOnLoad(this);
+
             this.VariantAppliedEvent = new EventData<Part, PartVariant>.OnEvent(VariantAppliedEventHandler);
             GameEvents.onVariantApplied.Add(this.VariantAppliedEvent);
         }
 
         private void VariantAppliedEventHandler(Part oPart, PartVariant oVariant)
         {
-            string sDebug = "";
-            string sValue;
-            float fValue;
-            double dValue;
-            double dValue2;
-
             if (oPart == null || oVariant == null)
             { return; }
 
-            #region "Resources"
+            ProcessResources(oPart, oVariant);
+            ProcessModules(oPart, oVariant);
+            UpdateUI(oPart);
+        }
 
+        private void ProcessResources(Part oPart, PartVariant oVariant)
+        {
+            string sValue;
+            double dValue;
+            double dValue2;
             PartResource oResource;
             ConfigNode oConfigNode;
 
@@ -49,7 +52,11 @@ namespace KSPF.Parts.Addons
                         { oPart.RemoveResource(oResource); }
                         else if (double.TryParse(sValue, out dValue))
                         {
-                            dValue2 = oResource.amount / oResource.maxAmount;
+                            if (oResource.maxAmount == 0.0)
+                            { dValue2 = 0.0; }
+                            else
+                            { dValue2 = oResource.amount / oResource.maxAmount; }
+
                             oResource.maxAmount = dValue;
 
                             if (HighLogic.LoadedSceneIsEditor)
@@ -72,10 +79,12 @@ namespace KSPF.Parts.Addons
                     }
                 }
             }
+        }
 
-            #endregion "Resources"
-
-            #region "Module Properties"
+        private void ProcessModules(Part oPart, PartVariant oVariant)
+        {
+            string sValue;
+            string sDebug = "";
 
             sValue = oVariant.GetExtraInfoValue("AddModule1");
             for (int i = 2; !string.IsNullOrEmpty(sValue); i++)
@@ -94,12 +103,12 @@ namespace KSPF.Parts.Addons
 
             foreach (PartModule oModule in oPart.Modules)
             {
-                if (_Debug)
+                if (Debug.developerConsoleVisible)
                 { sDebug = "Module Fields [" + oModule.moduleName + "]:\r\n"; }
 
                 foreach (BaseField oField in oModule.Fields)
                 {
-                    if (_Debug)
+                    if (Debug.developerConsoleVisible)
                     { sDebug += oField.name + "\r\n"; }
 
                     sValue = oVariant.GetExtraInfoValue(oModule.moduleName + "/" + oField.name);
@@ -108,18 +117,19 @@ namespace KSPF.Parts.Addons
                     {
                         oField.SetValue(Convert.ChangeType(sValue, oField.FieldInfo.FieldType), oField.host);
 
-                        if (_Debug)
+                        if (Debug.developerConsoleVisible)
                         { sDebug += "  Appled: " + oField.name + " = " + sValue + "\r\n"; }
                     }
                 }
 
-                if (_Debug)
+                if (Debug.developerConsoleVisible)
                 { Debug.Log(sDebug); }
             }
+        }
 
-            #endregion"Module Properties"
-
-            #region "Update UI"
+        private void UpdateUI(Part oPart)
+        {
+            // todo: figure out how to make it rerender for size/model changes
 
             if (HighLogic.LoadedSceneIsEditor)
             {
@@ -137,8 +147,6 @@ namespace KSPF.Parts.Addons
                 if (oWindow.part == oPart)
                 { oWindow.displayDirty = true; }
             }
-
-            #endregion "Update UI"
         }
     }
 }
