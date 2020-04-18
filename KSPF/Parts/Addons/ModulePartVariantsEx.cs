@@ -11,6 +11,7 @@ namespace KSPF.Parts.Addons
     public class ModulePartVariantsEx : MonoBehaviour
     {
         private EventData<Part, PartVariant>.OnEvent VariantAppliedEvent;
+        public static bool IsDebug = true;
 
         public void Start()
         {
@@ -25,9 +26,38 @@ namespace KSPF.Parts.Addons
             if (oPart == null || oVariant == null)
             { return; }
 
+            ProcessBase(oPart, oVariant);
             ProcessResources(oPart, oVariant);
             ProcessModules(oPart, oVariant);
             UpdateUI(oPart);
+        }
+
+        private void ProcessBase(Part oPart, PartVariant oVariant)
+        {
+            string sDebug = "";
+            string sValue;
+
+            if (IsDebug)
+            { sDebug = "Base Part Fields [Part]:\r\n"; }
+
+            foreach (BaseField oField in oPart.Fields)
+            {
+                if (IsDebug)
+                { sDebug += oField.name + "\r\n"; }
+
+                sValue = oVariant.GetExtraInfoValue("Part/" + oField.name);
+
+                if (!string.IsNullOrEmpty(sValue))
+                {
+                    oField.SetValue(Convert.ChangeType(sValue, oField.FieldInfo.FieldType), oField.host);
+
+                    if (IsDebug)
+                    { sDebug += "  Applied: " + oField.name + " = " + sValue + "\r\n"; }
+                }
+            }
+
+            if (IsDebug)
+            { Debug.Log(sDebug); }
         }
 
         private void ProcessResources(Part oPart, PartVariant oVariant)
@@ -86,29 +116,29 @@ namespace KSPF.Parts.Addons
             string sValue;
             string sDebug = "";
 
-            sValue = oVariant.GetExtraInfoValue("AddModule1");
-            for (int i = 2; !string.IsNullOrEmpty(sValue); i++)
-            {
-                oPart.AddModule(sValue);
-                sValue = oVariant.GetExtraInfoValue("AddModule" + i.ToString());
-            }
+            //sValue = oVariant.GetExtraInfoValue("AddModule1");
+            //for (int i = 2; !string.IsNullOrEmpty(sValue); i++)
+            //{
+            //    oPart.AddModule(sValue);
+            //    sValue = oVariant.GetExtraInfoValue("AddModule" + i.ToString());
+            //}
 
-            List<string> oRemoveModuleList = new List<string>();
-            sValue = oVariant.GetExtraInfoValue("RemoveModule1");
-            for (int i = 2; !string.IsNullOrEmpty(sValue); i++)
-            {
-                oRemoveModuleList.Add(sValue);
-                sValue = oVariant.GetExtraInfoValue("RemoveModule" + i.ToString());
-            }
+            //List<string> oRemoveModuleList = new List<string>();
+            //sValue = oVariant.GetExtraInfoValue("RemoveModule1");
+            //for (int i = 2; !string.IsNullOrEmpty(sValue); i++)
+            //{
+            //    oRemoveModuleList.Add(sValue);
+            //    sValue = oVariant.GetExtraInfoValue("RemoveModule" + i.ToString());
+            //}
 
             foreach (PartModule oModule in oPart.Modules)
             {
-                if (Debug.developerConsoleVisible)
+                if (IsDebug)
                 { sDebug = "Module Fields [" + oModule.moduleName + "]:\r\n"; }
 
                 foreach (BaseField oField in oModule.Fields)
                 {
-                    if (Debug.developerConsoleVisible)
+                    if (IsDebug)
                     { sDebug += oField.name + "\r\n"; }
 
                     sValue = oVariant.GetExtraInfoValue(oModule.moduleName + "/" + oField.name);
@@ -117,12 +147,12 @@ namespace KSPF.Parts.Addons
                     {
                         oField.SetValue(Convert.ChangeType(sValue, oField.FieldInfo.FieldType), oField.host);
 
-                        if (Debug.developerConsoleVisible)
-                        { sDebug += "  Appled: " + oField.name + " = " + sValue + "\r\n"; }
+                        if (IsDebug)
+                        { sDebug += "  Applied: " + oField.name + " = " + sValue + "\r\n"; }
                     }
                 }
-
-                if (Debug.developerConsoleVisible)
+                
+                if (IsDebug)
                 { Debug.Log(sDebug); }
             }
         }
